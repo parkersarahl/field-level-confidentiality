@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>HR Dashboard</h1>
+
+<p>Welcome, HR Partner</p>
+
+<div class="dashboard-grid">
+
+    <div class="task-card">
+
+        <h2>Add New Employee</h2>
+
+        <p>
+            Create employee profile and benefits information.
+        </p>
+
+        <a href="/hr/add-employee">
+            Open
+        </a>
+
+    </div>
+
+
+    <div class="task-card">
+
+        <h2>View Employee / Compensation & Benefits</h2>
+
+        <p>
+            View employee profiles, compensation and benefits.
+        </p>
+
+        <a href="/hr/employees">
+            Open
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

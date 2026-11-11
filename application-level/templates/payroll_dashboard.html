@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Payroll Dashboard</h1>
+
+<p>Welcome, Payroll Clerk</p>
+
+<div class="dashboard-grid">
+
+    <div class="task-card">
+
+        <h2>Complete Payroll Setup</h2>
+
+        <p>
+            Add salary, SSN and banking information
+            for an employee.
+        </p>
+
+        <a href="/payroll/setup">
+            Open
+        </a>
+
+    </div>
+
+
+    <div class="task-card">
+
+        <h2>View Payroll / Tax & Bank</h2>
+
+        <p>
+            Enter an Employee Org ID to request payroll,
+            tax and banking information.
+        </p>
+
+        <form method="POST" action="/payroll/records">
+
+            <label>Employee Org ID</label>
+
+            <input
+                type="number"
+                name="target_emp_id"
+                required
+            >
+
+            <button type="submit">
+                Check Access
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

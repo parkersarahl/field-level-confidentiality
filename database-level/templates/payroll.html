@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="panel">
+  <h1>Payroll run</h1>
+  {% if denied %}
+    <div class="flash error">Database says: {{ denied }}</div>
+  {% else %}
+  <p class="muted">One call to <code>dbenc.payroll_run()</code>: Postgres decrypts every salary and account number and returns gross pay per period.</p>
+  <div class="stats">
+    <div class="stat"><span>Employees paid</span><b>{{ count }}</b></div>
+    <div class="stat"><span>Gross pay this period</span><b>{{ total|money }}</b></div>
+  </div>
+  <table class="grid">
+    <thead><tr><th>Emp ID</th><th>Name</th><th class="right">Gross / period</th><th>Bank</th><th>Account number</th></tr></thead>
+    <tbody>{% for r in rows %}
+      <tr><td>#{{ r.emp_id }}</td><td>{{ r.full_name }}</td><td class="right">${{ '{:,.2f}'.format(r.gross_per_period) }}</td><td>{{ r.bank_name }}</td><td class="mono">{{ r.acct_number }}</td></tr>
+    {% endfor %}</tbody>
+  </table>
+  <p class="muted">Showing the first {{ rows|length }} of {{ count }}.</p>
+  {% endif %}
+</section>
+{% endblock %}

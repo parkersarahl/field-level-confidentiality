@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2>Salary Band Report</h2>
+
+    <p>
+        Logged in as:
+        <strong>{{ session["full_name"] }}</strong>
+        ({{ session["role_name"] }})
+    </p>
+
+    {% if not access_granted %}
+
+        <h3>ACCESS DENIED</h3>
+
+        <p>
+            This aggregate report is available only to the Analyst role.
+        </p>
+
+    {% else %}
+
+        <h3>ACCESS GRANTED</h3>
+
+        <p>
+            Aggregate salary-band information is shown below.
+            Groups containing fewer than {{ min_group_size }}
+            employees are suppressed.
+        </p>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Salary Band</th>
+                    <th>Employee Count</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in rows %}
+
+                <tr>
+
+                    <td>
+                        {{ row.salary_band }}
+                    </td>
+
+                    <td>
+
+                        {% if row.suppressed %}
+
+                            Suppressed (&lt; {{ min_group_size }} employees)
+
+                        {% else %}
+
+                            {{ row.employee_count }}
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

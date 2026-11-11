@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>My Pay & Benefits — Access Check</h1>
+
+
+<div class="card">
+
+    <h2>Security Decision</h2>
+
+
+    <!-- Gate 1 -->
+
+    <p>
+        {% if decision.security_level.passed %}
+            <strong>[PASS] Security Level Match</strong>
+        {% else %}
+            <strong>[FAIL] Security Level Match</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Role clearance:
+        {{ decision.security_level.role_clearance }}
+    </p>
+
+    <p>
+        Required classification:
+        {{ decision.security_level.required_level }}
+    </p>
+
+    <p>
+        Condition:
+        {{ decision.security_level.role_clearance }}
+        >=
+        {{ decision.security_level.required_level }}
+    </p>
+
+
+    <hr>
+
+
+    <!-- Gate 2 -->
+
+    <p>
+        {% if decision.authorization.passed %}
+            <strong>[PASS] Authorization</strong>
+        {% else %}
+            <strong>[FAIL] Authorization</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Current role:
+        {{ decision.authorization.role_name }}
+    </p>
+
+    <p>
+        Allowed roles:
+        {{ decision.authorization.allowed_roles }}
+    </p>
+
+
+    <hr>
+
+
+    <!-- Gate 3 -->
+
+    <p>
+        {% if decision.row_permission.passed %}
+            <strong>[PASS] Row Permission</strong>
+        {% else %}
+            <strong>[FAIL] Row Permission</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Logged-in Employee ID:
+        {{ decision.row_permission.logged_in_emp_id }}
+    </p>
+
+    <p>
+        Requested Employee ID:
+        {{ decision.row_permission.target_emp_id }}
+    </p>
+
+    <p>
+        Condition:
+        Logged-in employee must own the requested record.
+    </p>
+
+</div>
+
+
+{% if decision.access_granted %}
+
+<div class="card">
+
+    <h2>ACCESS GRANTED</h2>
+
+    <p>
+        All confidentiality checks passed.
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Compensation</h2>
+
+    <p>
+        <strong>Exact Salary:</strong>
+        ${{ data.salary }}
+    </p>
+
+    <p>
+        <strong>Salary Band:</strong>
+        {{ data.salary_band }}
+    </p>
+
+    <p>
+        <strong>Pay Frequency:</strong>
+        {{ data.pay_freq }}
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Benefits</h2>
+
+    <p>
+        <strong>Plan:</strong>
+        {{ data.plan_name }}
+    </p>
+
+    <p>
+        <strong>Coverage Tier:</strong>
+        {{ data.coverage_tier }}
+    </p>
+
+    <p>
+        <strong>Dependents:</strong>
+        {{ data.dependents }}
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Protected Information</h2>
+
+    <p>
+        <strong>SSN:</strong>
+        ***-**-{{ data.ssn_last4 }}
+    </p>
+
+    <p>
+        <strong>Bank:</strong>
+        {{ data.bank_name }}
+    </p>
+
+    <p>
+        <strong>Bank Account:</strong>
+        ******{{ data.acct_last4 }}
+    </p>
+
+    <p>
+        Full SSN and full bank account are not authorized
+        for the Employee role.
+    </p>
+
+</div>
+
+
+{% else %}
+
+<div class="card">
+
+    <h2>ACCESS DENIED</h2>
+
+    <p>
+        One or more confidentiality checks failed.
+    </p>
+
+    <p>
+        No compensation or benefits information was released.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

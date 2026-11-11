@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="panel">
+  <h1>Salary report</h1>
+  <p class="muted">Headcount by department and $20k salary band. Groups of fewer than 5 people are hidden, so Legal (1) and Internal Audit (2) never appear.</p>
+  {% if denied %}
+    <div class="flash error">Database says: {{ denied }}</div>
+  {% else %}
+  <div class="bands">
+    {% for dept, rows in depts.items() %}
+    <div class="band-card"><h3>{{ dept }}</h3>
+      {% for r in rows %}<div class="band-row"><span>{{ r.salary_band }}</span><b>{{ r.headcount }}</b></div>{% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

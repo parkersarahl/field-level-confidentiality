@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ company }} HR &amp; Payroll{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="{{ url_for('index') }}"><span class="logo">C</span>{{ company }} <small>HR &amp; Payroll</small></a>
+  {% if user %}
+  <nav>
+    <a href="{{ url_for('home') }}">Employees</a>
+    {% if user.role in ('r_hr', 'r_analyst', 'dba') %}<a href="{{ url_for('report') }}">Salary report</a>{% endif %}
+    {% if user.role == 'r_payroll' %}<a href="{{ url_for('payroll') }}">Payroll run</a>{% endif %}
+    {% if user.emp_id %}<a href="{{ url_for('employee', emp_id=user.emp_id) }}">My record</a>{% endif %}
+  </nav>
+  <div class="who">
+    <div class="who-text"><b>{{ user.name }}</b>
+      <span>{% if user.emp_id %}Emp ID #{{ user.emp_id }} &middot; {% endif %}{{ roles[user.role].title }}</span></div>
+    <button class="btn small ghost" id="sqltoggle" type="button" title="Show or hide the SQL panel">SQL panel</button>
+    <a class="btn small ghost" href="{{ url_for('logout') }}">Sign out</a>
+  </div>
+  {% endif %}
+</header>
+<div class="layout{% if user %} split{% endif %}">
+<main>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+</main>
+{% if user %}{% include "_sqlpane.html" %}{% endif %}
+</div>
+<footer>Demo portal with synthetic data. Every role connects to PostgreSQL as its own database login; the database decides what each role can read.</footer>
+<script>
+(function () {
+  var btn = document.getElementById("sqltoggle");
+  if (!btn) return;
+  try { if (localStorage.getItem("flc-sql") === "off") document.body.classList.add("nosql"); } catch (e) {}
+  btn.addEventListener("click", function () {
+    var off = document.body.classList.toggle("nosql");
+    try { localStorage.setItem("flc-sql", off ? "off" : "on"); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

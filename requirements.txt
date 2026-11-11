@@ -1,0 +1,18 @@
+# Field-Level Confidentiality — Python dependencies for BOTH implementations
+# From the repo root:  pip install -r requirements.txt
+
+# Web demo apps (both sides)
+Flask>=3.1
+Werkzeug>=3.1          # password hashing (werkzeug.security) + Flask's WSGI layer
+
+# PostgreSQL driver — binary build, so no system libpq-dev is required
+psycopg[binary]>=3.2
+
+# AES-256-GCM field encryption (application-level side)
+cryptography>=43.0
+
+# Deterministic synthetic employees, Faker seed 42 (shared 1,000-employee dataset)
+Faker>=30.0
+
+# Test suite (database-level side: database-level/tests/)
+pytest>=8.0

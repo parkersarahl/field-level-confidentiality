@@ -1,0 +1,101 @@
+-- Schema template. init_db substitutes __S__ (dbenc) and __OWNER__ (dbenc_owner).
+--
+-- Four tables. The *_enc columns hold ciphertext (bytea): [1 byte key version][payload].
+-- The derived columns (salary_band, *_last4) are plaintext, written together with the
+-- ciphertext, so masked views and range-limited reports keep working in SQL.
+
+DROP SCHEMA IF EXISTS __S__ CASCADE;
+CREATE SCHEMA __S__ AUTHORIZATION __OWNER__;
+SET ROLE __OWNER__;
+
+-- 1. Ordinary profile fields: no special protection.
+CREATE TABLE __S__.employees (
+  emp_id      int  PRIMARY KEY,
+  full_name   text NOT NULL,
+  email       text NOT NULL,
+  department  text NOT NULL,
+  title       text NOT NULL,
+  hire_date   date NOT NULL
+);
+
+-- 2. Compensation.
+CREATE TABLE __S__.compensation (
+  emp_id      int   PRIMARY KEY REFERENCES __S__.employees,
+  salary_enc  bytea NOT NULL,
+  salary_band text  NOT NULL,
+  pay_freq    text  NOT NULL
+);
+
+-- 3. Tax identifier + bank details.
+CREATE TABLE __S__.tax_bank (
+  emp_id      int   PRIMARY KEY REFERENCES __S__.employees,
+  ssn_enc     bytea NOT NULL,
+  ssn_last4   text  NOT NULL,
+  bank_name   text  NOT NULL,
+  acct_enc    bytea NOT NULL,
+  acct_last4  text  NOT NULL
+);
+
+-- 4. Benefits.
+CREATE TABLE __S__.benefits (
+  emp_id         int   PRIMARY KEY REFERENCES __S__.employees,
+  plan_name      text  NOT NULL,
+  coverage_tier  text  NOT NULL,
+  dependents_enc bytea NOT NULL
+);
+
+-- 5. Application users: who may sign in, as which database role, and as which employee.
+-- pw_hash is a bcrypt hash (pgcrypto crypt): one-way, salted, never decryptable. No role can read this table;
+-- sign-in goes through the SECURITY DEFINER function authenticate().
+CREATE TABLE __S__.app_users (
+  username  text PRIMARY KEY CHECK (username = lower(username)),
+  pw_hash   text NOT NULL,
+  role      text NOT NULL CHECK (role IN ('r_employee', 'r_payroll', 'r_hr', 'r_analyst', 'dba')),
+  emp_id    int  REFERENCES __S__.employees,
+  CHECK ((role = 'dba') = (emp_id IS NULL))
+);
+REVOKE ALL ON __S__.app_users FROM PUBLIC;
+
+-- Viewer identity, set by the application per transaction: SELECT set_config('app.employee_id', '42', true)
+CREATE FUNCTION __S__.me() RETURNS int LANGUAGE sql STABLE AS
+$$ SELECT nullif(current_setting('app.employee_id', true), '')::int $$;
+GRANT EXECUTE ON FUNCTION __S__.me() TO r_employee, r_payroll, r_hr, r_analyst;
+
+-- Row-level security: an employee sees only their own row in every table (profile included);
+-- payroll, HR and the analyst see all rows of the columns they are granted.
+ALTER TABLE __S__.employees    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE __S__.compensation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE __S__.tax_bank     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE __S__.benefits     ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY self_only ON __S__.employees    FOR SELECT TO r_employee USING (emp_id = __S__.me());
+CREATE POLICY all_rows  ON __S__.employees    FOR SELECT TO r_payroll, r_hr, r_analyst USING (true);
+CREATE POLICY self_only ON __S__.compensation FOR SELECT TO r_employee USING (emp_id = __S__.me());
+CREATE POLICY all_rows  ON __S__.compensation FOR SELECT TO r_payroll, r_hr USING (true);
+CREATE POLICY self_only ON __S__.tax_bank     FOR SELECT TO r_employee USING (emp_id = __S__.me());
+CREATE POLICY all_rows  ON __S__.tax_bank     FOR SELECT TO r_payroll, r_hr USING (true);
+CREATE POLICY self_only ON __S__.benefits     FOR SELECT TO r_employee USING (emp_id = __S__.me());
+CREATE POLICY all_rows  ON __S__.benefits     FOR SELECT TO r_hr USING (true);
+
+-- Range-limited reporting: headcount by department x salary band. Cells with fewer than
+-- 5 people are suppressed, so a one-person department (Legal) never shows up.
+-- Views run with the owner's rights, so the analyst needs no access to the base tables.
+CREATE VIEW __S__.salary_band_report AS
+SELECT e.department, c.salary_band, count(*) AS headcount
+FROM __S__.employees e JOIN __S__.compensation c USING (emp_id)
+GROUP BY e.department, c.salary_band
+HAVING count(*) >= 5;
+
+-- Column grants for the plaintext columns. (Ciphertext columns are granted per implementation.)
+GRANT USAGE  ON SCHEMA __S__ TO r_employee, r_payroll, r_hr, r_analyst;
+GRANT SELECT ON __S__.employees TO r_employee, r_payroll, r_hr, r_analyst;
+-- salary_band: HR only, as a per-employee column. The analyst never sees an individual's band;
+-- its only salary view is the aggregated, k>=5 salary_band_report granted below.
+GRANT SELECT (emp_id, pay_freq)                          ON __S__.compensation TO r_employee, r_payroll, r_hr;
+GRANT SELECT (salary_band)                               ON __S__.compensation TO r_hr;
+GRANT SELECT (emp_id, ssn_last4, bank_name, acct_last4)  ON __S__.tax_bank     TO r_employee, r_payroll;
+GRANT SELECT (emp_id, ssn_last4)                         ON __S__.tax_bank     TO r_hr;
+GRANT SELECT (emp_id, plan_name, coverage_tier)          ON __S__.benefits     TO r_employee, r_hr;
+GRANT SELECT ON __S__.salary_band_report TO r_hr, r_analyst;
+
+RESET ROLE;

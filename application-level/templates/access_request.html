@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Field-Level Confidentiality Demo</h1>
+
+
+<!-- Logged-in identity -->
+
+<div class="card">
+
+    <h2>Logged-in Identity</h2>
+
+    <p>
+        <strong>Name:</strong>
+        {{ full_name }}
+    </p>
+
+    <p>
+        <strong>User ID:</strong>
+        {{ user_id }}
+    </p>
+
+    <p>
+        <strong>Employee Org ID:</strong>
+        {{ emp_id }}
+    </p>
+
+    <p>
+        <strong>Role:</strong>
+        {{ role_name }}
+    </p>
+
+    <p>
+        <strong>Security Clearance:</strong>
+        {{ clearance }}
+    </p>
+
+</div>
+
+
+<!-- Access request -->
+
+<div class="card">
+
+    <h2>Request Access</h2>
+
+    <p>
+        Select any employee and any database field.
+        The confidentiality engine will decide whether access
+        should be granted.
+    </p>
+
+
+    <form method="POST" action="/request-access">
+
+        <label>
+            Target Employee Org ID
+        </label>
+
+        <input
+            type="number"
+            name="target_emp_id"
+            min="1"
+            required
+        >
+
+
+        <label>
+            Requested Information
+        </label>
+
+        <select name="requested_field" required>
+
+            <option value="">
+                -- Select Information --
+            </option>
+
+
+            <optgroup label="Employee Profile">
+
+                <option value="employees.full_name">
+                    Full Name
+                </option>
+
+                <option value="employees.email">
+                    Email
+                </option>
+
+                <option value="employees.department">
+                    Department
+                </option>
+
+                <option value="employees.title">
+                    Job Title
+                </option>
+
+                <option value="employees.hire_date">
+                    Hire Date
+                </option>
+
+            </optgroup>
+
+
+            <optgroup label="Compensation">
+
+                <option value="compensation.salary_enc">
+                    Exact Salary
+                </option>
+
+                <option value="compensation.salary_band">
+                    Salary Band
+                </option>
+
+                <option value="compensation.pay_freq">
+                    Pay Frequency
+                </option>
+
+            </optgroup>
+
+
+            <optgroup label="Tax & Bank">
+
+                <option value="tax_bank.ssn_enc">
+                    Full SSN
+                </option>
+
+                <option value="tax_bank.ssn_last4">
+                    SSN Last 4
+                </option>
+
+                <option value="tax_bank.bank_name">
+                    Bank Name
+                </option>
+
+                <option value="tax_bank.acct_enc">
+                    Full Bank Account
+                </option>
+
+                <option value="tax_bank.acct_last4">
+                    Bank Account Last 4
+                </option>
+
+            </optgroup>
+
+
+            <optgroup label="Benefits">
+
+                <option value="benefits.plan_name">
+                    Benefits Plan
+                </option>
+
+                <option value="benefits.coverage_tier">
+                    Coverage Tier
+                </option>
+
+                <option value="benefits.dependents_enc">
+                    Dependents
+                </option>
+
+            </optgroup>
+
+        </select>
+
+
+        <button type="submit">
+            Check Access
+        </button>
+
+    </form>
+
+</div>
+
+
+{% if decision %}
+
+<!-- Security evaluation -->
+
+<div class="card">
+
+    <h2>Security Evaluation</h2>
+
+
+    <h3>
+        Gate 1 — Security Level
+    </h3>
+
+    {% if decision.security_level.passed %}
+        <p><strong>[PASS]</strong></p>
+    {% else %}
+        <p><strong>[FAIL]</strong></p>
+    {% endif %}
+
+    <p>
+        User clearance:
+        {{ decision.security_level.role_clearance }}
+    </p>
+
+    <p>
+        Required classification:
+        {{ decision.security_level.required_level }}
+    </p>
+
+
+    <hr>
+
+
+    <h3>
+        Gate 2 — Field Authorization
+    </h3>
+
+    {% if decision.authorization.passed %}
+        <p><strong>[PASS]</strong></p>
+    {% else %}
+        <p><strong>[FAIL]</strong></p>
+    {% endif %}
+
+    <p>
+        Current role:
+        {{ decision.authorization.role_name }}
+    </p>
+
+    <p>
+        Allowed roles:
+        {{ decision.authorization.allowed_roles }}
+    </p>
+
+
+    <hr>
+
+
+    <h3>
+        Gate 3 — Row Permission
+    </h3>
+
+    {% if decision.row_permission.passed %}
+        <p><strong>[PASS]</strong></p>
+    {% else %}
+        <p><strong>[FAIL]</strong></p>
+    {% endif %}
+
+    <p>
+        Logged-in Employee ID:
+        {{ decision.row_permission.logged_in_emp_id }}
+    </p>
+
+    <p>
+        Requested Employee ID:
+        {{ decision.row_permission.target_emp_id }}
+    </p>
+
+</div>
+
+
+<!-- Final decision -->
+
+{% if decision.access_granted %}
+
+<div class="card">
+
+    <h2>ACCESS GRANTED</h2>
+
+    <p>
+        All required confidentiality checks passed.
+    </p>
+
+    <p>
+        <strong>Requested Field:</strong>
+        {{ requested_label }}
+    </p>
+
+    <p>
+        <strong>Returned Value:</strong>
+        {{ requested_value }}
+    </p>
+
+</div>
+
+{% else %}
+
+<div class="card">
+
+    <h2>ACCESS DENIED</h2>
+
+    <p>
+        One or more confidentiality checks failed.
+    </p>
+
+    <p>
+        Protected information was not released.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endif %}
+
+
+{% endblock %}

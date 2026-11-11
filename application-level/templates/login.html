@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <h1>Login</h1>
+
+    <p>Payroll & Benefits Security System</p>
+
+    <form method="POST" action="/login">
+
+        <label>User ID</label>
+        <input
+            type="text"
+            name="user_id"
+            required
+        >
+
+        <label>Password</label>
+        <input
+            type="password"
+            name="password"
+            required
+        >
+
+        <button type="submit">
+            Login
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

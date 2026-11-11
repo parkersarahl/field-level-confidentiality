@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+<p class="crumb"><a href="{{ url_for('home') }}">&larr; Employees</a></p>
+<section class="banner">
+  <div class="avatar">{{ emp.full_name.split()[0][0] }}{{ emp.full_name.split()[-1][0] }}</div>
+  <div><h1>{{ emp.full_name }}</h1><p>Emp ID #{{ emp.emp_id }} &middot; {{ emp.title }} &middot; {{ emp.department }}</p></div>
+</section>
+<p class="scope">Signed in as the <b>database administrator</b>. This is what <code>SELECT *</code> returns for this employee.</p>
+<div class="sections">
+  <section class="panel">
+    <h2>What the tables hold</h2>
+    {% for f, label in [('salary', 'Salary'), ('ssn', 'SSN'), ('acct', 'Bank account'), ('dependents', 'Dependents')] %}
+    <div class="row cipher"><span class="label">{{ label }}</span><span class="val mono">{{ raw[f][:44] }}&hellip;</span><span class="chip CIPHER">Ciphertext</span></div>
+    {% endfor %}
+    {% for f, label in [('salary_band', 'Salary band'), ('ssn_last4', 'SSN, last 4'), ('acct_last4', 'Account, last 4')] %}
+    <div class="row MASKED"><span class="label">{{ label }}</span><span class="val">{{ raw[f] }}</span><span class="chip MASKED">Plaintext column</span></div>
+    {% endfor %}
+  </section>
+  <section class="panel">
+    <h2>Then the DBA looks for a key</h2>
+    <p class="verdict {{ hunt.outcome }}">{{ hunt.outcome }}: {{ hunt.recovered|length }} of 4 encrypted fields recovered</p>
+    <p>{{ hunt.detail }}</p>
+    <p class="muted">That is the honest limit of database-level encryption: the key lives next to the data, so whoever runs the database can use it.</p>
+  </section>
+</div>
+{% endblock %}

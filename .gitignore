@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Generated results
+database-level/results/
+application-level/results/
+application-level/secrets/
+
+# LaTeX build artifacts (keep the .tex and .pdf under report/)
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+
+# OS
+.DS_Store

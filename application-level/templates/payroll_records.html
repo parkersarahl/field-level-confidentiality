@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Payroll / Tax & Bank — Access Check</h1>
+
+
+<div class="card">
+
+    <h2>Security Decision</h2>
+
+
+    <p>
+        {% if decision.security_level.passed %}
+            <strong>[PASS] Security Level Match</strong>
+        {% else %}
+            <strong>[FAIL] Security Level Match</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Role clearance:
+        {{ decision.security_level.role_clearance }}
+    </p>
+
+    <p>
+        Required classification:
+        {{ decision.security_level.required_level }}
+    </p>
+
+    <p>
+        Condition:
+        {{ decision.security_level.role_clearance }}
+        >=
+        {{ decision.security_level.required_level }}
+    </p>
+
+
+    <hr>
+
+
+    <p>
+        {% if decision.authorization.passed %}
+            <strong>[PASS] Authorization</strong>
+        {% else %}
+            <strong>[FAIL] Authorization</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Current role:
+        {{ decision.authorization.role_name }}
+    </p>
+
+    <p>
+        Allowed roles:
+        {{ decision.authorization.allowed_roles }}
+    </p>
+
+
+    <hr>
+
+
+    <p>
+        {% if decision.row_permission.passed %}
+            <strong>[PASS] Row Permission</strong>
+        {% else %}
+            <strong>[FAIL] Row Permission</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Logged-in Employee ID:
+        {{ decision.row_permission.logged_in_emp_id }}
+    </p>
+
+    <p>
+        Requested Employee ID:
+        {{ decision.row_permission.target_emp_id }}
+    </p>
+
+    <p>
+        Condition:
+        Payroll role is authorized to access employee payroll rows.
+    </p>
+
+</div>
+
+
+{% if decision.access_granted and data %}
+
+<div class="card">
+
+    <h2>ACCESS GRANTED</h2>
+
+    <p>
+        All three confidentiality checks passed.
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Employee</h2>
+
+    <p><strong>Name:</strong> {{ data.full_name }}</p>
+    <p><strong>Department:</strong> {{ data.department }}</p>
+    <p><strong>Title:</strong> {{ data.title }}</p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Payroll</h2>
+
+    <p>
+        <strong>Exact Salary:</strong>
+        ${{ data.salary }}
+    </p>
+
+    <p>
+        <strong>Salary Band:</strong>
+        {{ data.salary_band }}
+    </p>
+
+    <p>
+        <strong>Pay Frequency:</strong>
+        {{ data.pay_freq }}
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Tax & Bank</h2>
+
+    <p>
+        <strong>Full SSN:</strong>
+        {{ data.ssn }}
+    </p>
+
+    <p>
+        <strong>Bank:</strong>
+        {{ data.bank_name }}
+    </p>
+
+    <p>
+        <strong>Full Bank Account:</strong>
+        {{ data.bank_account }}
+    </p>
+
+</div>
+
+
+{% else %}
+
+<div class="card">
+
+    <h2>ACCESS DENIED</h2>
+
+    <p>
+        Payroll information was not released.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

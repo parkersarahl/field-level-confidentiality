@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Employee Dashboard</h1>
+
+<p>Welcome, {{ full_name }}</p>
+
+
+<div class="dashboard-grid">
+
+    <!-- =============================== -->
+    <!-- MY PROFILE -->
+    <!-- =============================== -->
+
+    <div class="task-card">
+
+        <h2>My Profile</h2>
+
+        <p>
+            Enter an Employee Org ID to request profile access.
+        </p>
+
+        <form method="POST" action="/employee/profile">
+
+            <label>Employee Org ID</label>
+
+            <input
+                type="number"
+                name="target_emp_id"
+                required
+            >
+
+            <button type="submit">
+                Check Access
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- MY PAY & BENEFITS -->
+    <!-- =============================== -->
+
+    <div class="task-card">
+
+        <h2>My Pay & Benefits</h2>
+
+        <p>
+            Enter an Employee Org ID to request pay and benefits information.
+        </p>
+
+        <form method="POST" action="/employee/pay-benefits">
+
+            <label>Employee Org ID</label>
+
+            <input
+                type="number"
+                name="target_emp_id"
+                required
+            >
+
+            <button type="submit">
+                Check Access
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

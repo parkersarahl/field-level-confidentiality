@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="panel narrow">
+  <h1>The database isn't ready</h1>
+  <p>The portal couldn't read the employee data:</p>
+  <pre>{{ error }}</pre>
+  <p>Start Postgres, set <code>PGHOST</code>, <code>PGPORT</code> and <code>FLC_ADMIN_PASSWORD</code>, and build the data with
+  <code>python -m flc.init_db</code>. Then reload this page.</p>
+</section>
+{% endblock %}

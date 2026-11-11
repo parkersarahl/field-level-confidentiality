@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Analyst Dashboard</h1>
+
+<p>Welcome, Reporting Analyst</p>
+
+<div class="dashboard-grid">
+
+    <div class="task-card">
+
+        <h2>Salary Band Report</h2>
+
+        <p>
+            View privacy-preserving salary statistics.
+        </p>
+
+        <a href="/analyst/salary-report">
+            Open
+        </a>
+
+    </div>
+
+
+    <div class="task-card">
+
+        <h2>Department Summary</h2>
+
+        <p>
+            View aggregate employee statistics by department.
+        </p>
+
+        <a href="/analyst/department-summary">
+            Open
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

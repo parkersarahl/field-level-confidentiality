@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add New Employee</h1>
+
+<form>
+
+    <div class="card">
+
+        <h2>Employee Profile</h2>
+
+        <label>Full Name</label>
+        <input type="text" required>
+
+
+        <label>Email</label>
+        <input type="email" required>
+
+
+        <label>Department</label>
+        <input type="text" required>
+
+
+        <label>Job Title</label>
+        <input type="text" required>
+
+
+        <label>Hire Date</label>
+        <input type="date" required>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Benefits</h2>
+
+        <label>Plan Name</label>
+        <input type="text">
+
+
+        <label>Coverage Tier</label>
+
+        <select>
+            <option>Employee Only</option>
+            <option>Employee + Spouse</option>
+            <option>Employee + Children</option>
+            <option>Family</option>
+        </select>
+
+
+        <label>Dependents</label>
+
+        <textarea
+            rows="5"
+            placeholder='Example: [{"name":"Kevin","relation":"Child"}]'
+        ></textarea>
+
+    </div>
+
+
+    <button type="submit">
+        Create Employee
+    </button>
+
+</form>
+
+{% endblock %}

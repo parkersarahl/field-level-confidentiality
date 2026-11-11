@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>My Profile — Access Check</h1>
+
+
+<!-- ================================================= -->
+<!-- SECURITY DECISION -->
+<!-- ================================================= -->
+
+<div class="card">
+
+    <h2>Security Decision</h2>
+
+
+    <!-- Gate 1 -->
+
+    <p>
+        {% if decision.security_level.passed %}
+            <strong>[PASS] Security Level Match</strong>
+        {% else %}
+            <strong>[FAIL] Security Level Match</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Role clearance:
+        {{ decision.security_level.role_clearance }}
+    </p>
+
+    <p>
+        Required level:
+        {{ decision.security_level.required_level }}
+    </p>
+
+
+    <hr>
+
+
+    <!-- Gate 2 -->
+
+    <p>
+        {% if decision.authorization.passed %}
+            <strong>[PASS] Authorization</strong>
+        {% else %}
+            <strong>[FAIL] Authorization</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Current role:
+        {{ decision.authorization.role_name }}
+    </p>
+
+    <p>
+        Allowed roles:
+        {{ decision.authorization.allowed_roles }}
+    </p>
+
+
+    <hr>
+
+
+    <!-- Gate 3 -->
+
+    <p>
+        {% if decision.row_permission.passed %}
+            <strong>[PASS] Row Permission</strong>
+        {% else %}
+            <strong>[FAIL] Row Permission</strong>
+        {% endif %}
+    </p>
+
+    <p>
+        Logged-in Employee ID:
+        {{ decision.row_permission.logged_in_emp_id }}
+    </p>
+
+    <p>
+        Requested Employee ID:
+        {{ decision.row_permission.target_emp_id }}
+    </p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- FINAL DECISION -->
+<!-- ================================================= -->
+
+{% if decision.access_granted %}
+
+<div class="card">
+
+    <h2>ACCESS GRANTED</h2>
+
+    <p>
+        All three confidentiality checks passed.
+    </p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- EMPLOYEE DATA -->
+<!-- ================================================= -->
+
+{% if employee %}
+
+<div class="card">
+
+    <h2>Employee Profile</h2>
+
+    <p>
+        <strong>Employee ID:</strong>
+        {{ employee[0] }}
+    </p>
+
+    <p>
+        <strong>Name:</strong>
+        {{ employee[1] }}
+    </p>
+
+    <p>
+        <strong>Email:</strong>
+        {{ employee[2] }}
+    </p>
+
+    <p>
+        <strong>Department:</strong>
+        {{ employee[3] }}
+    </p>
+
+    <p>
+        <strong>Job Title:</strong>
+        {{ employee[4] }}
+    </p>
+
+    <p>
+        <strong>Hire Date:</strong>
+        {{ employee[5] }}
+    </p>
+
+</div>
+
+{% endif %}
+
+
+{% else %}
+
+<div class="card">
+
+    <h2>ACCESS DENIED</h2>
+
+    <p>
+        One or more confidentiality checks failed.
+    </p>
+
+    <p>
+        Employee data was not released.
+    </p>
+
+</div>
+
+{% endif %}
+
+
+{% endblock %}

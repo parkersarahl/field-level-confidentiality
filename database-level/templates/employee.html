@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% macro field(label, f) %}
+  {% set st, val = rec[f] %}
+  <div class="row {{ st }}">
+    <span class="label">{{ label }}</span>
+    <span class="val">
+      {% if st == 'DENIED' %}<i>Restricted</i>
+      {% elif f == 'salary' %}{{ val|money }}
+      {% elif f == 'ssn_last4' %}&bull;&bull;&bull;-&bull;&bull;-{{ val }}
+      {% elif f == 'acct_last4' %}&bull;&bull;&bull;&bull;&bull;&bull;{{ val }}
+      {% else %}{{ val }}{% endif %}
+    </span>
+    <span class="chip {{ st }}">{{ {'PLAIN': 'Full access', 'MASKED': 'Masked', 'DENIED': 'No access'}[st] }}</span>
+  </div>
+{% endmacro %}
+{% macro plain(label, v) %}
+  <div class="row {{ 'PLAIN' if v else 'DENIED' }}">
+    <span class="label">{{ label }}</span>
+    <span class="val">{% if v %}{{ v }}{% else %}<i>Restricted</i>{% endif %}</span>
+    <span class="chip {{ 'PLAIN' if v else 'DENIED' }}">{{ 'Visible' if v else 'No access' }}</span>
+  </div>
+{% endmacro %}
+{% block title %}{{ e.full_name }} &middot; {{ company }}{% endblock %}
+{% block body %}
+<p class="crumb"><a href="{{ url_for('home') }}">&larr; Employees</a></p>
+<section class="banner">
+  <div class="avatar">{{ e.full_name.split()[0][0] }}{{ e.full_name.split()[-1][0] }}</div>
+  <div>
+    <h1>{{ e.full_name }}</h1>
+    <p>Emp ID #{{ e.emp_id }} &middot; {{ e.title }} &middot; {{ e.department }}</p>
+    <p class="muted">{{ e.email }} &middot; Hired {{ e.hire_date.strftime('%b %-d, %Y') }}</p>
+  </div>
+</section>
+<p class="scope">{% if switched %}Signed in as <b>{{ work_role }}</b>. This is your own record, so you see it through <b>{{ role_title }}</b>, like any employee.{% else %}Signed in as <b>{{ role_title }}</b>{% if mine %} (your own record){% endif %}.{% endif %}
+  The database decides what each field shows:
+  <span class="chip PLAIN">Full access</span> <span class="chip MASKED">Masked</span> <span class="chip DENIED">No access</span></p>
+
+<div class="sections">
+  <section class="panel">
+    <h2>Compensation</h2>
+    {{ field('Annual salary', 'salary') }}
+    {{ field('Salary band', 'salary_band') }}
+    {{ plain('Pay frequency', p.pay_freq|capitalize if p.pay_freq else None) }}
+  </section>
+  <section class="panel">
+    <h2>Tax &amp; banking</h2>
+    {{ field('Social Security number', 'ssn') }}
+    {{ field('SSN, last 4', 'ssn_last4') }}
+    {{ plain('Bank', p.bank_name) }}
+    {{ field('Bank account number', 'acct') }}
+    {{ field('Account, last 4', 'acct_last4') }}
+  </section>
+  <section class="panel">
+    <h2>Benefits</h2>
+    {{ plain('Plan', p.plan_name) }}
+    {{ plain('Coverage tier', p.coverage_tier) }}
+    {% set st = rec['dependents'][0] %}
+    <div class="row {{ st }}">
+      <span class="label">Dependents</span>
+      <span class="val">
+        {% if st == 'DENIED' %}<i>Restricted</i>
+        {% elif deps %}<ul class="deps">{% for d in deps %}<li>{{ d.name }} <small>{{ d.relation }}, born {{ d.dob }}</small></li>{% endfor %}</ul>
+        {% else %}None on file{% endif %}
+      </span>
+      <span class="chip {{ st }}">{{ {'PLAIN': 'Full access', 'MASKED': 'Masked', 'DENIED': 'No access'}[st] }}</span>
+    </div>
+  </section>
+</div>
+{% endblock %}

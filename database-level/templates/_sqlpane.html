@@ -1,0 +1,26 @@
+<aside class="sqlpane" aria-label="SQL that Postgres ran for this page">
+  <div class="sql-head">
+    <h2>What Postgres ran</h2>
+    <p>{{ sql_count }} statement{{ '' if sql_count == 1 else 's' }} for this page{% if sql_refused %}, <b class="bad">{{ sql_refused }} refused</b>{% endif %}</p>
+  </div>
+  {% if not sql_groups %}
+    <p class="sql-empty">No database statements for this page.</p>
+  {% endif %}
+  {% for grp in sql_groups %}
+  <section class="conn">
+    <p class="conn-title">Connection {{ loop.index }} &middot; logged in as <b>{{ grp.role }}</b>{% if grp.role == 'postgres' %} <span class="warn">superuser</span>{% endif %}</p>
+    {% for e in grp.stmts %}
+    <div class="stmt {{ e.status }}">
+      <div class="stmt-meta">
+        <span class="tag {{ e.status }}">{{ {'ok': 'OK', 'denied': 'REFUSED', 'error': 'ERROR'}[e.status] }}</span>
+        {% if e.status == 'ok' and e.rows is not none and e.rows >= 0 %}<span>{{ e.rows }} row{{ '' if e.rows == 1 else 's' }}</span>{% endif %}
+        <span>{{ '%.1f'|format(e.ms) }} ms</span>
+      </div>
+      <pre>{{ sql_html(e.sql) }}</pre>
+      {% if e.detail %}<p class="stmt-detail">{{ e.detail }}</p>{% endif %}
+      {% set n = sql_note(e) %}{% if n %}<p class="stmt-note">{{ n }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endfor %}
+</aside>

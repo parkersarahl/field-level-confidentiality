@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="panel">
+  <h1>Employee directory</h1>
+  <form class="search" method="get" action="{{ url_for('home') }}">
+    <input name="q" value="{{ q }}" placeholder="Search by name or employee ID" autofocus>
+    <input type="hidden" name="go" value="1">
+    <button class="btn" type="submit">Search</button>
+  </form>
+
+  {% if q %}
+    {% if results %}
+    <table class="grid">
+      <thead><tr><th>Emp ID</th><th>Name</th><th>Department</th><th>Title</th><th></th></tr></thead>
+      <tbody>
+      {% for r in results %}
+        <tr><td>#{{ r.emp_id }}</td><td>{{ r.full_name }}</td><td>{{ r.department or '—' }}</td><td>{{ r.title or '—' }}</td>
+            <td class="right"><a class="btn small" href="{{ url_for('employee', emp_id=r.emp_id) }}">Open record</a></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if results|length == 25 %}<p class="muted">Showing the first 25 matches. Narrow the search to see others.</p>{% endif %}
+    {% else %}
+      <p class="muted">No employee matches &ldquo;{{ q }}&rdquo;.</p>
+    {% endif %}
+  {% else %}
+    {% if user.role == 'r_employee' %}<p class="muted">You can look colleagues up by name or ID, but you will only see their name. Their details are restricted.</p>{% endif %}
+    <p class="muted">Type a name (or part of one) or an employee ID. Try <b>1</b>, or a first name such as <b>Maria</b>.</p>
+    <div class="shortcuts">
+      {% if user.emp_id %}<a class="tile" href="{{ url_for('employee', emp_id=user.emp_id) }}"><b>My record</b><span>Your own pay, bank and benefits</span></a>{% endif %}
+      {% if user.role == 'r_payroll' %}<a class="tile" href="{{ url_for('payroll') }}"><b>Payroll run</b><span>Gross pay and bank account for everyone</span></a>{% endif %}
+      {% if user.role in ('r_hr', 'r_analyst', 'dba') %}<a class="tile" href="{{ url_for('report') }}"><b>Salary report</b><span>Headcount by department and band</span></a>{% endif %}
+      {% if user.role != 'r_employee' %}<a class="tile" href="{{ url_for('employee', emp_id=1) }}"><b>Open employee #1</b><span>The demo record, with dependents</span></a>{% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

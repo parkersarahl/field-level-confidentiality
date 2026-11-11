@@ -1,0 +1,16 @@
+# Application-level encryption side — Python dependencies
+# Update your venv with:  pip install -r requirements.txt
+
+# Flask demo app
+Flask>=3.1
+Werkzeug>=3.1          # password hashing (werkzeug.security) + Flask's WSGI layer
+
+# PostgreSQL driver — binary build, so no system libpq-dev is required
+psycopg[binary]>=3.2
+
+# AES-256-GCM field encryption (crypto.py, populate_db.py)
+cryptography>=43.0
+
+# Needed only by seed_1000.py, which loads the same 1,000 synthetic employees
+# as the database-level side using the shared Faker-seed-42 generator
+Faker>=30.0

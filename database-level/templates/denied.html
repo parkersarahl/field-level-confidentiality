@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}No access &middot; {{ company }}{% endblock %}
+{% block body %}
+<section class="panel narrow">
+  <h1>No access to employee #{{ emp_id }}</h1>
+  <p>You can only open your own record. Postgres returned no row for this employee, so there is nothing to show. The
+  directory search gives names only.</p>
+  <p><a class="btn" href="{{ url_for('employee', emp_id=user.emp_id) }}">Back to my record</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Salary Band Report</h1>
+
+<div class="note">
+    Groups containing fewer than 5 employees are suppressed.
+</div>
+
+<table>
+
+    <tr>
+        <th>Department</th>
+        <th>Salary Band</th>
+        <th>Employee Count</th>
+    </tr>
+
+    <tr>
+        <td colspan="3">
+            No report data loaded.
+        </td>
+    </tr>
+
+</table>
+
+{% endblock %}
