@@ -1,0 +1,107 @@
+{
+  "attacks": [
+    {
+      "scenario": "DBA with superuser: SELECT * then hunt for a key",
+      "outcome": "EXPOSED",
+      "recovered": [
+        "acct",
+        "dependents",
+        "salary",
+        "ssn"
+      ],
+      "detail": "SELECT key FROM dbenc.key_store returns every key; pgp_sym_decrypt() then opens all four fields. (key-like objects found in DB: 4)"
+    },
+    {
+      "scenario": "Attacker restores a stolen backup",
+      "outcome": "EXPOSED",
+      "recovered": [
+        "acct",
+        "dependents",
+        "salary",
+        "ssn"
+      ],
+      "detail": "Dump contains the key table, so the restored copy decrypts everything. (plaintext visible in dump text: False; key material in dump: True)"
+    },
+    {
+      "scenario": "Attacker restores a stolen backup (key_store data excluded from dump)",
+      "outcome": "PROTECTED",
+      "recovered": [],
+      "detail": "Dump has ciphertext but no key rows; restored copy cannot decrypt (needs the key kept elsewhere). (plaintext visible in dump text: False; key material in dump: False)"
+    },
+    {
+      "scenario": "SQL injection as the reporting analyst",
+      "outcome": "PROTECTED",
+      "recovered": [],
+      "detail": "10 probes (direct reads, key table, decrypt functions, SET ROLE): 10 denied"
+    },
+    {
+      "scenario": "SQL injection as an employee: forge app.employee_id",
+      "outcome": "EXPOSED",
+      "recovered": [
+        "dependents",
+        "salary"
+      ],
+      "detail": "Identity comes from a client-settable setting, so the forged id passes RLS, and the SECURITY DEFINER my_*() functions decrypt the victim's data inside Postgres. Masked values read: ssn_last4, acct_last4."
+    },
+    {
+      "scenario": "DBA swaps two encrypted salaries",
+      "outcome": "DETECTED",
+      "recovered": [],
+      "detail": "Payroll read of employee 1 fails: integrity check failed: salary ciphertext does not belong to employee 1. The ciphertext carries its own field and employee id, and dbenc._dec() checks them."
+    }
+  ],
+  "matrix": {
+    "r_employee": {
+      "salary": "PLAIN",
+      "salary_band": "DENIED",
+      "ssn": "DENIED",
+      "ssn_last4": "MASKED",
+      "acct": "DENIED",
+      "acct_last4": "MASKED",
+      "dependents": "PLAIN"
+    },
+    "r_payroll": {
+      "salary": "PLAIN",
+      "salary_band": "DENIED",
+      "ssn": "PLAIN",
+      "ssn_last4": "MASKED",
+      "acct": "PLAIN",
+      "acct_last4": "MASKED",
+      "dependents": "DENIED"
+    },
+    "r_hr": {
+      "salary": "PLAIN",
+      "salary_band": "MASKED",
+      "ssn": "DENIED",
+      "ssn_last4": "MASKED",
+      "acct": "DENIED",
+      "acct_last4": "DENIED",
+      "dependents": "PLAIN"
+    },
+    "r_analyst": {
+      "salary": "DENIED",
+      "salary_band": "DENIED",
+      "ssn": "DENIED",
+      "ssn_last4": "DENIED",
+      "acct": "DENIED",
+      "acct_last4": "DENIED",
+      "dependents": "DENIED"
+    }
+  },
+  "usefulness": {
+    "report_rows": 28,
+    "small_depts_suppressed": true,
+    "payroll_s": 0.055119410157203674,
+    "payroll_rows": 1000,
+    "filter_s": 0.04301662603393197,
+    "filter_count": 219,
+    "equal_ciphertext_for_equal_plaintext": false
+  },
+  "keys": {
+    "keys_before": 4,
+    "keys_after": 8,
+    "rotate_all_s": 0.28454673709347844,
+    "data_intact_after_rotation": true,
+    "rows_per_field": 1000
+  }
+}

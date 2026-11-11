@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/sarah/UTC/Fall 2026/5270/Final Project/field-level-confidentiality/database-level
+configfile: pytest.ini
+testpaths: tests
+plugins: Faker-40.54.0
+collected 43 items
+
+tests/test_project.py ...........................................        [100%]
+
+============================= 43 passed in 11.71s ==============================

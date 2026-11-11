@@ -1,0 +1,44 @@
+{
+  "db_level": {
+    "raw_read_is_ciphertext": true,
+    "key_is_outside_db": false,
+    "dba_plus_keyfile_decrypts": true,
+    "dba_decrypt_sample_ok": true,
+    "dump_carries_keys": true,
+    "db_connection_is_superuser": false,
+    "sql_bypass_sees_all_ciphertext_rows": 0,
+    "t_payroll_run_1000_ms": 60.8,
+    "t_access_check_ms": 17.8,
+    "t_band_report_ms": 14.7,
+    "scope": {
+      "employee own salary": true,
+      "employee other salary": false,
+      "payroll any ssn": true,
+      "hr any ssn": false,
+      "hr any dependents": true,
+      "analyst exact salary": false,
+      "analyst salary band": false
+    }
+  },
+  "app_level": {
+    "raw_read_is_ciphertext": true,
+    "key_is_outside_db": true,
+    "dba_plus_keyfile_decrypts": true,
+    "dba_decrypt_sample_ok": true,
+    "dump_carries_keys": false,
+    "db_connection_is_superuser": true,
+    "sql_bypass_sees_all_ciphertext_rows": 1000,
+    "t_payroll_run_1000_ms": 33.4,
+    "t_access_check_ms": 14.9,
+    "t_band_report_ms": 14.9,
+    "scope": {
+      "employee own salary": true,
+      "employee other salary": false,
+      "payroll any ssn": true,
+      "hr any ssn": false,
+      "hr any dependents": true,
+      "analyst exact salary": false,
+      "analyst salary band": false
+    }
+  }
+}

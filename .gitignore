@@ -5,9 +5,6 @@ __pycache__/
 venv/
 .pytest_cache/
 
-# Generated results
-database-level/results/
-application-level/results/
 application-level/secrets/
 
 # LaTeX build artifacts (keep the .tex and .pdf under report/)
