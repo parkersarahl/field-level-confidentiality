@@ -25,10 +25,10 @@ field-level-confidentiality/
 │   ├── flc/               Python package (init, seed, access, attacks, evaluation)
 │   ├── app.py             Flask demo portal with a live "what Postgres ran" SQL panel
 │   ├── tests/             pytest suite (43 tests)
-│   ├── sql_tests/         85 standalone SQL checks (run in any client)
+│   ├── sql_tests/         90 standalone SQL checks (run in any client)
 │   ├── demo/              one-command demo + test scripts
 │   └── README.md          full details of this side
-└──  application-level/     Teammate's implementation (AES-GCM, key in a file)
+└── application-level/     Deponker's implementation (AES-GCM, key in a file)
     ├── db/schema.sql      schema
     ├── crypto.py          AES-256-GCM encrypt/decrypt
     ├── security.py        the three access gates (clearance, need-to-know, row)
@@ -70,7 +70,7 @@ python -m flc.evaluate                     # regenerates results/evaluation.md (
 flask --app app run                        # the demo portal at http://127.0.0.1:5000
 ```
 
-The 85 SQL checks run in any client, e.g.:
+The 90 SQL checks run in any client, e.g.:
 
 ```bash
 psql -h localhost -U postgres -d flc -f sql_tests/00_setup_helpers.sql -f sql_tests/01_role_matrix.sql
@@ -88,7 +88,7 @@ python seed_1000.py                        # loads the SAME 1,000 employees as t
 python app.py                              # the demo app
 ```
 
-`seed_1000.py` reuses the encrypt_text()` and the db-level project's deterministic
+`seed_1000.py` reuses the teammate's own `encrypt_text()` and the db-level project's deterministic
 generator (Faker seed 42), so both databases hold identical people. His original 8 demo logins
 (`alice` … `samuel`, passwords `alice123` …) are kept on employees 1–8. The demo key is written to
 `application-level/secrets/aes_key.bin` on first run — it is a **demo-only** key, not a real secret.
@@ -122,9 +122,9 @@ application-level is the reverse. Neither removes the tension; each chooses whic
 
 - **43 Python tests** — `database-level/tests/test_project.py` (role scope, storage format, tamper
   detection, key rotation, attacks, the login/users table, and the Flask portal).
-- **85 SQL checks** — `database-level/sql_tests/` (role-by-field matrix, storage, tamper/binding,
+- **90 SQL checks** — `database-level/sql_tests/` (role-by-field matrix, storage, tamper/binding,
   analyst injection probes, key rotation, query usefulness).
 - **Comparison harness** — `application-level/compare.py`, which exercises both implementations on the
   same 1,000-employee dataset.
 
-The comparison harness is what exercises it alongside the database-level suite.
+The application-level side has no unit tests of its own; the comparison harness is what exercises it alongside the database-level suite. 
