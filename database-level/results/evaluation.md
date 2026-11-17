@@ -18,8 +18,8 @@ Data: 1000 synthetic employees (Faker seed 42), freshly initialised. Encryption 
 | Workflow | Result |
 |---|---|
 | Range-limited report (dept x salary band, groups < 5 hidden) | works, 28 cells, Legal/Audit suppressed: True |
-| Payroll run (1000 employees: gross pay + account) | 55 ms (decrypt inside Postgres) |
-| Salary filter, salary > $120k (HR) -> 219 rows | 43 ms (SQL WHERE over a decrypt function, no index) |
+| Payroll run (1000 employees: gross pay + account) | 50 ms (decrypt inside Postgres) |
+| Salary filter, salary > $120k (HR) -> 219 rows | 37 ms (SQL WHERE over a decrypt function, no index) |
 | Equality search on a full SSN / account | not possible: ciphertext is randomized |
 | Masked lookups (last 4, band) | works in SQL, indexable |
 

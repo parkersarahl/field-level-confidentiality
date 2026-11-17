@@ -78,7 +78,7 @@ psql -h localhost -U postgres -d flc -f sql_tests/00_setup_helpers.sql -f sql_te
 
 Demo sign-ins and the role-by-field access matrix are documented in `database-level/README.md`.
 
-## Running the application-level side (teammate)
+## Running the application-level side (Deponker)
 
 From `application-level/`:
 

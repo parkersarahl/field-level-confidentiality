@@ -91,16 +91,16 @@
   "usefulness": {
     "report_rows": 28,
     "small_depts_suppressed": true,
-    "payroll_s": 0.055119410157203674,
+    "payroll_s": 0.0496427989564836,
     "payroll_rows": 1000,
-    "filter_s": 0.04301662603393197,
+    "filter_s": 0.03744422784075141,
     "filter_count": 219,
     "equal_ciphertext_for_equal_plaintext": false
   },
   "keys": {
     "keys_before": 4,
     "keys_after": 8,
-    "rotate_all_s": 0.28454673709347844,
+    "rotate_all_s": 0.27992850984446704,
     "data_intact_after_rotation": true,
     "rows_per_field": 1000
   }
